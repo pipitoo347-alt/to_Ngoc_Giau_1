@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>🎀 Món Quà Bí Mật Cute Hồng 🎁</title>
+<style>
+body{
+    margin:0;
+    font-family:"Comic Sans MS",sans-serif;
+    overflow:hidden;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(270deg,#ffd6e8,#ffb7d5);
+    background-size:400% 400%;
+    animation:bgMove 15s ease infinite;
+}
+@keyframes bgMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+#box{
+    background:#ffffffee;
+    padding:35px 40px;
+    width:420px;
+    border-radius:25px;
+    box-shadow:0 0 30px rgba(255,120,180,0.4);
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    margin:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
+#yes{background:#ff6b9d;color:white;animation:pulse 1.3s infinite;}
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.07);}
+    100%{transform:scale(1);}
+}
+#no{background:#777;color:white;position:relative;}
+#saveBtn{
+    display:none;
+    background:#ff6b9d;
+    color:white;
+    border:none;
+    border-radius:12px;
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:15px;
+}
+#msg{
+    margin-top:20px;
+    font-size:17px;
+    color:#d63679;
+    white-space: pre-line;
+    opacity:0;
+    transition:1s;
+    text-align:left;
+    min-height:120px;
+}
+.falling{
+    position:absolute;
+    font-size:28px;
+    user-select:none;
+    pointer-events:none;
+}
+.heart{
+    position:fixed;
+    font-size:22px;
+    color:#ff6ba0;
+    animation:float 2s linear forwards;
+}
+@keyframes float{
+    0%{transform:translateY(0) scale(0.8);opacity:1}
+    100%{transform:translateY(-120px) scale(1.3);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div id="box">
+    <h2 id="q">🎀 Bà có muốn mở món quà bí mật cute hồng này không? 🎁</h2>
+    <button id="yes">Có 💗</button>
+    <button id="no">Không 😢</button>
+    <div id="msg"></div>
+    <button id="saveBtn">💾 Tải thiệp về</button>
+</div>
+
+<audio id="music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2ec3c017f6.mp3?filename=happy-birthday-light-14339.mp3" preload="auto" loop></audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// ==== ELEMENTS ====
+const yes = document.getElementById("yes");
+const no = document.getElementById("no");
+const q = document.getElementById("q");
+const msg = document.getElementById("msg");
+const music = document.getElementById("music");
+const saveBtn = document.getElementById("saveBtn");
+
+// ==== LỜI CHÚC ====
+const wish = `Chúc Ngọc Giàu sinh nhật vui vẻ.  
+Tuổi 18 chính thức đủ tuổi trưởng thành ròi nha,  
+nhưng tui mong tâm hồn bà lúc nào cũng vô tư vui vẻ, một đời bình an,  
+tui quý Ngọc Giàu lắm lắm lun.  
+祝你有一個快樂的生日!`;
+
+// ==== CÂU HỎI TRẮC NGHIỆM ====
+const questions = ["🌸 Bà chắc chưa nè?","🎀 Suy nghĩ lại hong?","✨ Không mở là tiếc á...","💗 Bấm 'Có' đi màaa ~","🎉 Một câu nữa trước khi mở!"];
+let idx = 0;
+
+// ==== NÚT "KHÔNG" CHẠY TRỐN ====
+no.addEventListener("mouseover", () => {
+    if(idx < questions.length-1){
+        idx++;
+        q.textContent = questions[idx];
+    } else {
+        no.style.display = "none";
+        q.textContent = "😳 Giờ chỉ còn 'Có' thôi~";
+    }
+    no.style.transform = `translate(${Math.random()*120-60}px, ${Math.random()*120-60}px)`;
+});
+
+// ==== TRÁI TIM BAY THEO CHUỘT ====
+document.addEventListener("mousemove", (e) => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerHTML = "💗";
+    h.style.left = (e.clientX + Math.random()*20-10) + "px";
+    h.style.top = (e.clientY + Math.random()*20-10) + "px";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2000);
+});
+
+// ==== KHI BẤM CÓ (chỉ 1 lần) ====
+yes.addEventListener("click", () => {
+    // Ẩn nút có và nút không
+    yes.style.display = "none";
+    no.style.display = "none";
+
+    // bật nhạc
+    music.play().catch(() => alert("🎵 Nhạc chưa phát được. Hãy cho phép âm thanh trên trình duyệt!"));
+
+    // mưa emoji 🎂 🎈 ✨
+    const items = [];
+    const types = ["🎂","🎈","✨"];
+    for(let i=0;i<30;i++){
+        const el = document.createElement("div");
+        el.className = "falling";
+        el.innerHTML = types[Math.floor(Math.random()*types.length)];
+        el.style.left = Math.random()*window.innerWidth + "px";
+        el.style.top = Math.random()*(-window.innerHeight) + "px";
+        el.speed = 0.5 + Math.random()*2;
+        document.body.appendChild(el);
+        items.push(el);
+    }
+    function animateFall(){
+        items.forEach(it => {
+            let top = parseFloat(it.style.top);
+            top += it.speed;
+            if(top > window.innerHeight){
+                top = -50;
+                it.style.left = Math.random()*window.innerWidth + "px";
+            }
+            it.style.top = top + "px";
+        });
+        requestAnimationFrame(animateFall);
+    }
+    animateFall();
+
+    // Hiển thị lời chúc kiểu gõ chữ
+    msg.style.opacity = 1;
+    let i = 0;
+    let interval = setInterval(() => {
+        msg.textContent += wish.charAt(i);
+        i++;
+        if(i >= wish.length) clearInterval(interval);
+    }, 35);
+
+    q.textContent = "🎁 Đây là món quà dành cho bà!";
+    saveBtn.style.display = "inline-block"; // hiện nút tải thiệp
+});
+</script>
+
+</body>
+</html>
