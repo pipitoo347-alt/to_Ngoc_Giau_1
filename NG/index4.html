@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thiệp Sinh Nhật Pro Max</title>
+<style>
+  :root{
+    --pink1:#ffd7e8;
+    --pink2:#ffb6d5;
+    --accent:#ff3e9e;
+    --soft:#fff5fb;
+  }
+  html,body{height:100%;margin:0;font-family:"Comic Sans MS",cursive;overflow:hidden}
+  body{
+    background: linear-gradient(180deg,var(--pink1),var(--pink2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#333;
+  }
+
+  .wrap{width:100%;max-width:780px;margin:20px auto;position:relative;padding:28px;box-sizing:border-box}
+  .card{
+    background:linear-gradient(180deg,var(--soft),#fff);
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.12);
+    text-align:center;
+    position:relative;
+    z-index:20;
+  }
+
+  h1{margin:6px 0 12px;font-size:30px;color:var(--accent);text-shadow:0 4px 18px rgba(255,255,255,0.6)}
+  .subtitle{color:#b6407a;margin-bottom:6px}
+
+  .question, #password-screen, #letter-screen{display:none}
+  .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px}
+  button.opt{padding:10px 16px;border-radius:12px;border:none;background:linear-gradient(180deg,#ff7ab3,#ff4f9a);color:white;cursor:pointer;box-shadow:0 6px 16px rgba(255,82,147,0.18)}
+  input#pw{padding:10px;border-radius:10px;border:1px solid #ffd0ea;text-align:center;width:200px;outline:none;box-shadow:inset 0 2px 6px rgba(255,182,203,0.2)}
+  .small{font-size:14px;color:#b23a7a;margin-top:8px}
+
+  /* letter */
+  #letter{background:linear-gradient(180deg,#fff,#fff6fb);padding:18px;border-radius:16px;margin-top:14px;font-size:17px;line-height:1.5;color:#6a2a52;box-shadow:inset 0 2px 12px rgba(255,0,140,0.03)}
+
+  /* falling items */
+  .falling-item{
+    position:fixed;
+    top:-50px;
+    font-size:22px;
+    pointer-events:none;
+    z-index:15;
+    will-change: transform, opacity;
+    opacity:0.95;
+  }
+  /* popup stay */
+  #stay-popup{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);z-index:60;align-items:center;justify-content:center}
+  #stay-box{background:white;padding:22px;border-radius:20px;width:320px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.25)}
+  #stay-box h3{margin:0 0 8px;color:var(--accent)}
+  #stay-box p{margin:0 0 12px;color:#b94b88}
+  #stay-box button{padding:10px 16px;border-radius:12px;border:none;background:linear-gradient(180deg,#ff7ab3,#ff4f9a);color:white;cursor:pointer}
+
+  /* small responsive */
+  @media(max-width:480px){
+    .card{padding:12px}
+    h1{font-size:24px}
+    .row{gap:8px}
+    button.opt{padding:8px 12px}
+  }
+
+  /* heart sparkle */
+  .heart{
+    position:fixed;z-index:18;pointer-events:none;font-size:28px;opacity:.95;
+    transform-origin:center;
+    will-change:transform,opacity;
+  }
+
+  /* canvas overlay (fireworks) */
+  #fwCanvas{position:fixed;inset:0;pointer-events:none;z-index:10}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <canvas id="fwCanvas"></canvas>
+
+  <div class="card" id="game">
+    <!-- intro message -->
+    <div id="intro-msg">
+      <h2 style="color:var(--accent);margin-bottom:12px;opacity:0;transition:opacity 1s;">Trả lời câu hỏi xíu nha 🎀</h2>
+    </div>
+
+    <div id="q1" class="question">
+      <h2>Câu 1: Ngọc Giàu có dễ thương khum?</h2>
+      <div class="row">
+        <button class="opt" onclick="nextQ('q1','q2','a')">a. Bình thường</button>
+        <button class="opt" onclick="nextQ('q1','q2','b')">b. Cũng cũng</button>
+        <button class="opt" onclick="nextQ('q1','q2','c')">c. Không biết</button>
+        <button class="opt" onclick="nextQ('q1','q2','d')">d. Quá xá dễ thương</button>
+      </div>
+    </div>
+
+    <div id="q2" class="question">
+      <h2>Câu 2: Ngọc Giàu thích màu gì nhất?</h2>
+      <div class="row">
+        <button class="opt" onclick="nextQ('q2','q3','a')">a. Trắng</button>
+        <button class="opt" onclick="nextQ('q2','q3','b')">b. Đen</button>
+        <button class="opt" onclick="nextQ('q2','q3','c')">c. Xanh</button>
+        <button class="opt" onclick="nextQ('q2','q3','d')">d. Hồng</button>
+      </div>
+    </div>
+
+    <div id="q3" class="question">
+      <h2>Câu 3: Hôm nay Ngọc Giàu có vui không?</h2>
+      <div class="row">
+        <button class="opt" onclick="nextQ('q3','q4','a')">a. Không</button>
+        <button class="opt" onclick="nextQ('q3','q4','b')">b. Vui</button>
+        <button class="opt" onclick="nextQ('q3','q4','c')">c. Rất vui</button>
+        <button class="opt" onclick="nextQ('q3','q4','d')">d. Phải vuii</button>
+      </div>
+    </div>
+
+    <div id="q4" class="question">
+      <h2>Câu 4: Hôm nay là ngày gì?</h2>
+      <div class="row">
+        <button class="opt" onclick="nextQ('q4','password-screen','a')">a. Ngày bình thường</button>
+        <button class="opt" onclick="nextQ('q4','password-screen','b')">b. Ngày đặc biệt</button>
+        <button class="opt" onclick="nextQ('q4','password-screen','c')">c. Ngày của tình bạn</button>
+        <button class="opt" onclick="nextQ('q4','password-screen','d')">d. Sinh nhật Ngọc Giàu</button>
+      </div>
+    </div>
+
+    <div id="password-screen">
+      <h2>Nhập ngày sinh để mở thư 🎁</h2>
+      <div style="margin-top:12px">
+        <input id="pw" placeholder="VD: 22012025" />
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="opt" onclick="checkPassword()">Mở thư</button>
+      </div>
+      <div class="small">Gợi ý: ngày tháng năm (vd: 22012025)</div>
+    </div>
+
+    <div id="letter-screen">
+      <div id="letter">
+        Chúc Ngọc Giàu sinh nhật vui vẻ. Tuổi 18 đủ tuổi trưởng thành ròi nhaa, nhưng tui mong
+        tâm hồn bà lúc nào cũng vô tư, vui vẻ. Tui quý Ngọc Giàu lắm lắm lun 💖
+        祝你有一個快樂的生日!
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Audio -->
+<audio id="music" src="thap_roi_tu_do.mp3" preload="auto"></audio>
+<audio id="ting" src="ting.mp3" preload="auto"></audio>
+
+<!-- stay popup -->
+<div id="stay-popup" style="display:flex">
+  <div id="stay-box" style="transform:scale(.98);opacity:0">
+    <div style="font-size:42px">💗</div>
+    <h3>Đừng rời đi mà...</h3>
+    <p>Chỉ một phút thôi, mở thư nhaaa 💕</p>
+    <button onclick="closeStayPopup()">Ở lại nè</button>
+  </div>
+</div>
+
+<script>
+/* ========= init UI ========= */
+const qIds=['q1','q2','q3','q4'];
+qIds.forEach(id=>document.getElementById(id).style.display='none');
+
+// Hiển thị intro trước
+const intro = document.querySelector('#intro-msg h2');
+setTimeout(()=>{ intro.style.opacity=1; },200);
+setTimeout(()=>{
+  document.getElementById('intro-msg').style.display='none';
+  document.getElementById('q1').style.display='block';
+},1800);
+
+/* ========= check answer + next question ========= */
+function nextQ(current, next, chosen){
+  const correct='d'; // đáp án đúng luôn là d
+  if(chosen !== correct){
+    alert('Sai rồi 😢, thử lại nha!');
+    return;
+  }
+  document.getElementById(current).style.display='none';
+  document.getElementById(next).style.display='block';
+}
+
+/* ========= password + reveal ========= */
+const CORRECT = '04122007';
+function checkPassword(){
+  const pw = document.getElementById('pw').value.trim();
+  if(pw===CORRECT){
+    revealCard();
+  } else {
+    alert('Sai mật khẩu rồi 😢');
+  }
+}
+
+/* ========= music + fade ========= */
+const music = document.getElementById('music');
+music.loop = true;
+music.volume = 0.0;
+function fadeInMusic(duration=1200){
+  let start = performance.now();
+  function tick(now){
+    let t = Math.min(1, (now-start)/duration);
+    music.volume = 0.05 + 0.9 * t;
+    if(t<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ========= falling items ========= */
+const fallingIcons=["🎈","🎀","🎂","💖"];
+function spawnFalling(max=20, rate=160){
+  let created=0;
+  const timer = setInterval(()=>{
+    if(created>=max){ clearInterval(timer); return; }
+    created++;
+    const el=document.createElement('div');
+    el.className='falling-item';
+    el.textContent=fallingIcons[Math.floor(Math.random()*fallingIcons.length)];
+    const size=18+Math.random()*16;
+    el.style.fontSize=size+'px';
+    el.style.left=(Math.random()*90)+'vw';
+    const duration=3000+Math.random()*2000;
+    el.style.transition=`transform ${duration}ms linear, opacity ${duration}ms linear`;
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{
+      el.style.transform=`translateY(${window.innerHeight+80}px) rotate(${Math.random()*80-40}deg)`;
+      el.style.opacity=0;
+    });
+    setTimeout(()=>el.remove(), duration+50);
+  }, rate);
+}
+
+/* ========= heart sparkle ========= */
+function spawnHeart(x,y){
+  const el=document.createElement('div');
+  el.className='heart';
+  el.textContent='💖';
+  el.style.left=(x-12)+'px';
+  el.style.top=(y-12)+'px';
+  el.style.transform='scale(0.6)';
+  el.style.opacity=1;
+  document.body.appendChild(el);
+  const dur=900+Math.random()*700;
+  el.animate([{ transform: 'translateY(0) scale(0.6)', opacity:1 },
+              { transform: `translateY(-60px) scale(1.2)`, opacity:0 }],
+              {duration:dur, easing:'cubic-bezier(.2,.8,.2,1)'});
+  setTimeout(()=>el.remove(), dur+40);
+}
+
+/* ========= Canvas fireworks ========= */
+const canvas=document.getElementById('fwCanvas');
+const ctx=canvas.getContext('2d');
+let W=canvas.width=innerWidth;
+let H=canvas.height=innerHeight;
+window.addEventListener('resize',()=>{ W=canvas.width=innerWidth; H=canvas.height=innerHeight; });
+const fireworks=[], particles=[];
+function rand(min,max){ return Math.random()*(max-min)+min; }
+class Firework{
+  constructor(x,y,targetY,color){ this.x=x; this.y=y; this.vy=rand(-6,-9); this.targetY=targetY; this.color=color; this.exploded=false; }
+  update(){ this.y+=this.vy; this.vy+=0.18; if(this.y<=this.targetY && !this.exploded){ this.exploded=true; explode(this.x,this.y,this.color); } }
+  draw(){ ctx.beginPath(); ctx.fillStyle=this.color; ctx.arc(this.x,this.y,2.5,0,Math.PI*2); ctx.fill(); }
+}
+class Particle{
+  constructor(x,y,color){ this.x=x; this.y=y; const ang=rand(0,Math.PI*2); const sp=rand(1.6,5); this.vx=Math.cos(ang)*sp; this.vy=Math.sin(ang)*sp; this.life=rand(600,1100); this.start=performance.now(); this.color=color; }
+  update(dt){ this.vy+=0.02; this.x+=this.vx; this.y+=this.vy; }
+  draw(now){ const age=now-this.start; const t=Math.min(1,age/this.life); ctx.globalAlpha=1-t; ctx.beginPath(); ctx.fillStyle=this.color; ctx.arc(this.x,this.y,2+(1-t)*2.6,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+}
+function explode(x,y,color){ const count=18+Math.floor(rand(6,16)); for(let i=0;i<count;i++) particles.push(new Particle(x,y,color)); }
+function startFireworksBurst(times=12){
+  let i=0;
+  const colors=['#ff77b8','#ffd36e','#ffd1ff','#ff7aa6','#ffd6f0'];
+  const timer=setInterval(()=>{
+    if(i>=times){ clearInterval(timer); return; }
+    const x=rand(100,W-100);
+    const targetY=rand(H*0.15,H*0.45);
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    fireworks.push(new Firework(x,H+10,targetY,color));
+    i++;
+  },140);
+}
+let last=performance.now();
+function loop(now){
+  const dt=now-last; last=now;
+  ctx.clearRect(0,0,W,H);
+  for(let i=fireworks.length-1;i>=0;i--){ fireworks[i].update(); fireworks[i].draw(); if(fireworks[i].exploded) fireworks.splice(i,1); }
+  for(let i=particles.length-1;i>=0;i--){ particles[i].update(dt); particles[i].draw(now); if(now-particles[i].start>particles[i].life) particles.splice(i,1); }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ========= reveal sequence ========= */
+function revealCard(){
+  document.getElementById('password-screen').style.display='none';
+  document.getElementById('ting').play().catch(()=>{});
+  startFireworksBurst(14);
+  setTimeout(()=>spawnFalling(18,140),400);
+  setTimeout(()=>{
+    document.getElementById('letter-screen').style.display='block';
+    heartInterval=setInterval(()=>spawnHeart(rand(120,innerWidth-120),rand(160,innerHeight-220)),700);
+    music.currentTime=0; music.play().then(()=>fadeInMusic(1200)).catch(()=>{});
+  },1800);
+  for(let i=0;i<6;i++){ setTimeout(()=>spawnHeart(innerWidth/2+rand(-180,180),innerHeight/2+rand(-40,160)),i*220); }
+}
+
+/* ========= exit / stay popup ========= */
+const stayPopup=document.getElementById('stay-popup');
+const stayBox=document.getElementById('stay-box');
+let popupShown=false;
+function showStayPopup(){
+  if(popupShown) return; popupShown=true;
+  stayPopup.style.display='flex';
+  stayBox.style.transform='scale(.95)'; stayBox.style.opacity='0';
+  setTimeout(()=>{ stayBox.style.transition='transform .28s ease, opacity .28s ease'; stayBox.style.transform='scale(1)'; stayBox.style.opacity='1'; },10);
+  document.getElementById('ting').play().catch(()=>{});
+}
+function closeStayPopup(){ stayPopup.style.display='none'; }
+window.addEventListener('mouseout',function(e){ if(e.clientY<=0 && !popupShown){ showStayPopup(); }});
+window.addEventListener('visibilitychange',function(){ if(document.hidden && !popupShown){ showStayPopup(); }});
+window.onbeforeunload=function(e){ if(!popupShown) showStayPopup(); return ''; };
+
+/* click spawn heart */
+document.getElementById('game').addEventListener('click',(ev)=>{ spawnHeart(ev.clientX,ev.clientY); });
+document.getElementById('pw').addEventListener('keydown',(e)=>{ if(e.key==='Enter') checkPassword(); });
+
+</script>
+</body>
+</html>
